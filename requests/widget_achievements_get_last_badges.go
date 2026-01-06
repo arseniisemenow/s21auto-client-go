@@ -9,27 +9,26 @@ type WidgetAchievementsGetLastBadges_Variables struct {
 	Limit int64 `json:"limit"`
 }
 
-
 type WidgetAchievementsGetLastBadges_Data struct {
 	Student WidgetAchievementsGetLastBadges_Data_Student `json:"student"`
 }
 
 type WidgetAchievementsGetLastBadges_Data_Student struct {
 	GetLastBadges []WidgetAchievementsGetLastBadges_Data_GetLastBadge `json:"getLastBadges"`
-	Typename      string         `json:"__typename"`
+	Typename      string                                              `json:"__typename"`
 }
 
 type WidgetAchievementsGetLastBadges_Data_GetLastBadge struct {
-	ID       string `json:"id"`
-	Points   int64  `json:"points"`
-	Badge    WidgetAchievementsGetLastBadges_Data_Badge  `json:"badge"`
-	Award    WidgetAchievementsGetLastBadges_Data_Award  `json:"award"`
-	Typename string `json:"__typename"`
+	ID       string                                     `json:"id"`
+	Points   int64                                      `json:"points"`
+	Badge    WidgetAchievementsGetLastBadges_Data_Badge `json:"badge"`
+	Award    WidgetAchievementsGetLastBadges_Data_Award `json:"award"`
+	Typename string                                     `json:"__typename"`
 }
 
 type WidgetAchievementsGetLastBadges_Data_Award struct {
 	AwardBounties []WidgetAchievementsGetLastBadges_Data_AwardBounty `json:"awardBounties"`
-	Typename      string        `json:"__typename"`
+	Typename      string                                             `json:"__typename"`
 }
 
 type WidgetAchievementsGetLastBadges_Data_AwardBounty struct {
@@ -42,7 +41,6 @@ type WidgetAchievementsGetLastBadges_Data_Badge struct {
 	AvatarURL string `json:"avatarUrl"`
 	Typename  string `json:"__typename"`
 }
-
 
 func (ctx *RequestContext) WidgetAchievementsGetLastBadges(variables WidgetAchievementsGetLastBadges_Variables) (WidgetAchievementsGetLastBadges_Data, error) {
 	request := gql.NewQueryRequest[WidgetAchievementsGetLastBadges_Variables](

@@ -11,14 +11,13 @@ type PublicProfileGetStudentTraffic_Variables struct {
 	Date     string `json:"date"`
 }
 
-
 type PublicProfileGetStudentTraffic_Data struct {
 	Student PublicProfileGetStudentTraffic_Data_Student `json:"student"`
 }
 
 type PublicProfileGetStudentTraffic_Data_Student struct {
 	GetStudentTraffic PublicProfileGetStudentTraffic_Data_GetStudentTraffic `json:"getStudentTraffic"`
-	Typename          string            `json:"__typename"`
+	Typename          string                                                `json:"__typename"`
 }
 
 type PublicProfileGetStudentTraffic_Data_GetStudentTraffic struct {
@@ -27,7 +26,6 @@ type PublicProfileGetStudentTraffic_Data_GetStudentTraffic struct {
 	StartDate string        `json:"startDate"`
 	Typename  string        `json:"__typename"`
 }
-
 
 func (ctx *RequestContext) PublicProfileGetStudentTraffic(variables PublicProfileGetStudentTraffic_Variables) (PublicProfileGetStudentTraffic_Data, error) {
 	request := gql.NewQueryRequest[PublicProfileGetStudentTraffic_Variables](

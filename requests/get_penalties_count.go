@@ -9,7 +9,6 @@ type GetPenaltiesCount_Variables struct {
 	Statuses []string `json:"statuses"`
 }
 
-
 type GetPenaltiesCount_Data struct {
 	Penalty GetPenaltiesCount_Data_Penalty `json:"penalty"`
 }
@@ -18,7 +17,6 @@ type GetPenaltiesCount_Data_Penalty struct {
 	CountMyPenalties int64  `json:"countMyPenalties"`
 	Typename         string `json:"__typename"`
 }
-
 
 func (ctx *RequestContext) GetPenaltiesCount(variables GetPenaltiesCount_Variables) (GetPenaltiesCount_Data, error) {
 	request := gql.NewQueryRequest[GetPenaltiesCount_Variables](

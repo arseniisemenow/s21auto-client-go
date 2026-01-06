@@ -11,14 +11,13 @@ type PublicProfileLoadAverageLogtime_Variables struct {
 	Date     string `json:"date"`
 }
 
-
 type PublicProfileLoadAverageLogtime_Data struct {
 	School21 PublicProfileLoadAverageLogtime_Data_School21 `json:"school21"`
 }
 
 type PublicProfileLoadAverageLogtime_Data_School21 struct {
 	LoadAverageLogtime PublicProfileLoadAverageLogtime_Data_LoadAverageLogtime `json:"loadAverageLogtime"`
-	Typename           string             `json:"__typename"`
+	Typename           string                                                  `json:"__typename"`
 }
 
 type PublicProfileLoadAverageLogtime_Data_LoadAverageLogtime struct {
@@ -27,7 +26,6 @@ type PublicProfileLoadAverageLogtime_Data_LoadAverageLogtime struct {
 	WeekPerMonth int64  `json:"weekPerMonth"`
 	Typename     string `json:"__typename"`
 }
-
 
 func (ctx *RequestContext) PublicProfileLoadAverageLogtime(variables PublicProfileLoadAverageLogtime_Variables) (PublicProfileLoadAverageLogtime_Data, error) {
 	request := gql.NewQueryRequest[PublicProfileLoadAverageLogtime_Variables](

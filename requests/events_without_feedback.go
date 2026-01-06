@@ -12,7 +12,6 @@ type EventsWithoutFeedback_Variables struct {
 	To   time.Time `json:"to"`
 }
 
-
 type EventsWithoutFeedback_Data struct {
 	Student EventsWithoutFeedback_Data_Student `json:"student"`
 }
@@ -21,7 +20,6 @@ type EventsWithoutFeedback_Data_Student struct {
 	GetCalendarEventsWithoutFeedback []interface{} `json:"getCalendarEventsWithoutFeedback"`
 	Typename                         string        `json:"__typename"`
 }
-
 
 func (ctx *RequestContext) EventsWithoutFeedback(variables EventsWithoutFeedback_Variables) (EventsWithoutFeedback_Data, error) {
 	request := gql.NewQueryRequest[EventsWithoutFeedback_Variables](

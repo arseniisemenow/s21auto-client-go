@@ -9,26 +9,25 @@ type PublicProfileGetCoalition_Variables struct {
 	UserID string `json:"userId"`
 }
 
-
 type PublicProfileGetCoalition_Data struct {
 	Student PublicProfileGetCoalition_Data_Student `json:"student"`
 }
 
 type PublicProfileGetCoalition_Data_Student struct {
 	GetUserTournamentWidget PublicProfileGetCoalition_Data_GetUserTournamentWidget `json:"getUserTournamentWidget"`
-	Typename                string                  `json:"__typename"`
+	Typename                string                                                 `json:"__typename"`
 }
 
 type PublicProfileGetCoalition_Data_GetUserTournamentWidget struct {
 	CoalitionMember      PublicProfileGetCoalition_Data_CoalitionMember      `json:"coalitionMember"`
 	LastTournamentResult PublicProfileGetCoalition_Data_LastTournamentResult `json:"lastTournamentResult"`
-	Typename             string               `json:"__typename"`
+	Typename             string                                              `json:"__typename"`
 }
 
 type PublicProfileGetCoalition_Data_CoalitionMember struct {
 	Coalition                  PublicProfileGetCoalition_Data_Coalition                  `json:"coalition"`
 	CurrentTournamentPowerRank PublicProfileGetCoalition_Data_CurrentTournamentPowerRank `json:"currentTournamentPowerRank"`
-	Typename                   string                     `json:"__typename"`
+	Typename                   string                                                    `json:"__typename"`
 }
 
 type PublicProfileGetCoalition_Data_Coalition struct {
@@ -40,9 +39,9 @@ type PublicProfileGetCoalition_Data_Coalition struct {
 }
 
 type PublicProfileGetCoalition_Data_CurrentTournamentPowerRank struct {
-	Rank     int64  `json:"rank"`
-	Power    PublicProfileGetCoalition_Data_Power  `json:"power"`
-	Typename string `json:"__typename"`
+	Rank     int64                                `json:"rank"`
+	Power    PublicProfileGetCoalition_Data_Power `json:"power"`
+	Typename string                               `json:"__typename"`
 }
 
 type PublicProfileGetCoalition_Data_Power struct {
@@ -56,7 +55,6 @@ type PublicProfileGetCoalition_Data_LastTournamentResult struct {
 	Power    int64  `json:"power"`
 	Typename string `json:"__typename"`
 }
-
 
 func (ctx *RequestContext) PublicProfileGetCoalition(variables PublicProfileGetCoalition_Variables) (PublicProfileGetCoalition_Data, error) {
 	request := gql.NewQueryRequest[PublicProfileGetCoalition_Variables](

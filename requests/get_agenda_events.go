@@ -13,7 +13,6 @@ type GetAgendaEvents_Variables struct {
 	Limit int64     `json:"limit"`
 }
 
-
 type GetAgendaEvents_Data struct {
 	CalendarEventS21 GetAgendaEvents_Data_CalendarEventS21 `json:"calendarEventS21"`
 }
@@ -22,7 +21,6 @@ type GetAgendaEvents_Data_CalendarEventS21 struct {
 	GetMyAgendaEvents []interface{} `json:"getMyAgendaEvents"`
 	Typename          string        `json:"__typename"`
 }
-
 
 func (ctx *RequestContext) GetAgendaEvents(variables GetAgendaEvents_Variables) (GetAgendaEvents_Data, error) {
 	request := gql.NewQueryRequest[GetAgendaEvents_Variables](

@@ -9,37 +9,36 @@ type ProjectMapGetStudentGraphTemplate_Variables struct {
 	StudentID string `json:"studentId"`
 }
 
-
 type ProjectMapGetStudentGraphTemplate_Data struct {
 	HolyGraph ProjectMapGetStudentGraphTemplate_Data_HolyGraph `json:"holyGraph"`
 }
 
 type ProjectMapGetStudentGraphTemplate_Data_HolyGraph struct {
 	GetStudentGraphTemplate ProjectMapGetStudentGraphTemplate_Data_GetStudentGraphTemplate `json:"getStudentGraphTemplate"`
-	Typename                string                  `json:"__typename"`
+	Typename                string                                                         `json:"__typename"`
 }
 
 type ProjectMapGetStudentGraphTemplate_Data_GetStudentGraphTemplate struct {
 	Edges    []ProjectMapGetStudentGraphTemplate_Data_Edge `json:"edges"`
 	Nodes    []ProjectMapGetStudentGraphTemplate_Data_Node `json:"nodes"`
-	Typename string `json:"__typename"`
+	Typename string                                        `json:"__typename"`
 }
 
 type ProjectMapGetStudentGraphTemplate_Data_Edge struct {
-	ID           string    `json:"id"`
-	Source       string    `json:"source"`
-	Target       string    `json:"target"`
-	SourceHandle string    `json:"sourceHandle"`
-	TargetHandle string    `json:"targetHandle"`
+	ID           string                                           `json:"id"`
+	Source       string                                           `json:"source"`
+	Target       string                                           `json:"target"`
+	SourceHandle string                                           `json:"sourceHandle"`
+	TargetHandle string                                           `json:"targetHandle"`
 	Data         ProjectMapGetStudentGraphTemplate_Data_DataClass `json:"data"`
-	Typename     string    `json:"__typename"`
+	Typename     string                                           `json:"__typename"`
 }
 
 type ProjectMapGetStudentGraphTemplate_Data_DataClass struct {
-	SourceGap int64      `json:"sourceGap"`
-	TargetGap int64      `json:"targetGap"`
+	SourceGap int64                                             `json:"sourceGap"`
+	TargetGap int64                                             `json:"targetGap"`
 	Points    []ProjectMapGetStudentGraphTemplate_Data_Position `json:"points"`
-	Typename  string     `json:"__typename"`
+	Typename  string                                            `json:"__typename"`
 }
 
 type ProjectMapGetStudentGraphTemplate_Data_Position struct {
@@ -49,26 +48,26 @@ type ProjectMapGetStudentGraphTemplate_Data_Position struct {
 }
 
 type ProjectMapGetStudentGraphTemplate_Data_Node struct {
-	ID       string   `json:"id"`
-	Label    string   `json:"label"`
-	Handles  []string `json:"handles"`
+	ID       string                                          `json:"id"`
+	Label    string                                          `json:"label"`
+	Handles  []string                                        `json:"handles"`
 	Position ProjectMapGetStudentGraphTemplate_Data_Position `json:"position"`
 	Items    []ProjectMapGetStudentGraphTemplate_Data_Item   `json:"items"`
-	Typename string   `json:"__typename"`
+	Typename string                                          `json:"__typename"`
 }
 
 type ProjectMapGetStudentGraphTemplate_Data_Item struct {
-	ID                string        `json:"id"`
-	Code              string        `json:"code"`
-	Handles           []string      `json:"handles"`
-	EntityType        string        `json:"entityType"`
-	EntityID          int64         `json:"entityId"`
-	ParentNodeCodes   []string      `json:"parentNodeCodes"`
-	ChildrenNodeCodes []string      `json:"childrenNodeCodes"`
-	Skills            []interface{} `json:"skills"`
-	Goal              *ProjectMapGetStudentGraphTemplate_Data_Course       `json:"goal"`
-	Course            *ProjectMapGetStudentGraphTemplate_Data_Course       `json:"course"`
-	Typename          string        `json:"__typename"`
+	ID                string                                         `json:"id"`
+	Code              string                                         `json:"code"`
+	Handles           []string                                       `json:"handles"`
+	EntityType        string                                         `json:"entityType"`
+	EntityID          int64                                          `json:"entityId"`
+	ParentNodeCodes   []string                                       `json:"parentNodeCodes"`
+	ChildrenNodeCodes []string                                       `json:"childrenNodeCodes"`
+	Skills            []interface{}                                  `json:"skills"`
+	Goal              *ProjectMapGetStudentGraphTemplate_Data_Course `json:"goal"`
+	Course            *ProjectMapGetStudentGraphTemplate_Data_Course `json:"course"`
+	Typename          string                                         `json:"__typename"`
 }
 
 type ProjectMapGetStudentGraphTemplate_Data_Course struct {
@@ -81,7 +80,6 @@ type ProjectMapGetStudentGraphTemplate_Data_Course struct {
 	Typename           string  `json:"__typename"`
 	GoalExecutionType  *string `json:"goalExecutionType,omitempty"`
 }
-
 
 func (ctx *RequestContext) ProjectMapGetStudentGraphTemplate(variables ProjectMapGetStudentGraphTemplate_Variables) (ProjectMapGetStudentGraphTemplate_Data, error) {
 	request := gql.NewQueryRequest[ProjectMapGetStudentGraphTemplate_Variables](

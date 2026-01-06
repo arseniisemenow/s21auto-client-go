@@ -6,9 +6,9 @@ package requests
 import "github.com/arseniisemenow/s21auto-client-go/gql"
 
 type DeadlinesGetDeadlines_Variables struct {
-	Page             DeadlinesGetDeadlines_Variables_Page     `json:"page"`
-	DeadlineStatuses []string `json:"deadlineStatuses"`
-	Sorting          DeadlinesGetDeadlines_Variables_Sorting  `json:"sorting"`
+	Page             DeadlinesGetDeadlines_Variables_Page    `json:"page"`
+	DeadlineStatuses []string                                `json:"deadlineStatuses"`
+	Sorting          DeadlinesGetDeadlines_Variables_Sorting `json:"sorting"`
 }
 
 type DeadlinesGetDeadlines_Variables_Page struct {
@@ -21,7 +21,6 @@ type DeadlinesGetDeadlines_Variables_Sorting struct {
 	Asc  bool   `json:"asc"`
 }
 
-
 type DeadlinesGetDeadlines_Data struct {
 	Student DeadlinesGetDeadlines_Data_Student `json:"student"`
 }
@@ -30,7 +29,6 @@ type DeadlinesGetDeadlines_Data_Student struct {
 	GetDeadlines []interface{} `json:"getDeadlines"`
 	Typename     string        `json:"__typename"`
 }
-
 
 func (ctx *RequestContext) DeadlinesGetDeadlines(variables DeadlinesGetDeadlines_Variables) (DeadlinesGetDeadlines_Data, error) {
 	request := gql.NewQueryRequest[DeadlinesGetDeadlines_Variables](

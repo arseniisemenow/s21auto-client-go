@@ -8,14 +8,13 @@ import "github.com/arseniisemenow/s21auto-client-go/gql"
 type GetCurrentUser_Variables struct {
 }
 
-
 type GetCurrentUser_Data struct {
 	User GetCurrentUser_Data_User `json:"user"`
 }
 
 type GetCurrentUser_Data_User struct {
 	GetCurrentUser GetCurrentUser_Data_GetCurrentUser `json:"getCurrentUser"`
-	Typename       string         `json:"__typename"`
+	Typename       string                             `json:"__typename"`
 }
 
 type GetCurrentUser_Data_GetCurrentUser struct {
@@ -28,7 +27,6 @@ type GetCurrentUser_Data_GetCurrentUser struct {
 	CurrentSchoolStudentID string `json:"currentSchoolStudentId"`
 	Typename               string `json:"__typename"`
 }
-
 
 func (ctx *RequestContext) GetCurrentUser(variables GetCurrentUser_Variables) (GetCurrentUser_Data, error) {
 	request := gql.NewQueryRequest[GetCurrentUser_Variables](
