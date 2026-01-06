@@ -43,7 +43,7 @@ type Token struct {
 
 const (
 	kсBaseUrl         = "https://auth.sberclass.ru/auth/realms/EduPowerKeycloak"
-	cookieUrlTemplate = kсBaseUrl + "/protocol/openid-connect/auth?client_id=school21&redirect_uri=https%%3A%%2F%%2Fedu.21-school.ru%%2F&state=%s&response_mode=fragment&response_type=code&scope=openid&nonce=%s"
+	cookieUrlTemplate = kсBaseUrl + "/protocol/openid-connect/auth?client_id=school21&redirect_uri=https%%3A%%2F%%2Fplatform.21-school.ru%%2F&state=%s&response_mode=fragment&response_type=code&scope=openid&nonce=%s"
 	tokenUrl          = kсBaseUrl + "/protocol/openid-connect/token"
 )
 
@@ -126,7 +126,7 @@ func (token *Token) Refresh(ctx context.Context) (err error) {
 		"code":         token.Code,
 		"grant_type":   "authorization_code",
 		"client_id":    "school21",
-		"redirect_uri": "https://edu.21-school.ru/",
+		"redirect_uri": "https://platform.21-school.ru/",
 	}).Post(tokenUrl)
 
 	if err != nil {

@@ -6,7 +6,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-var S21GqlUrl = "https://edu.21-school.ru/services/graphql"
+var S21GqlUrl = "https://platform.21-school.ru/services/graphql"
 
 type Client struct {
 	gqlUrl string

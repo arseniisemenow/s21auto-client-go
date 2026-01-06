@@ -60,7 +60,7 @@ var userRoleLoaderGetRolesRequest = gql.NewQueryRequest(
 	gql.None{},
 )
 
-var s21GqlUrl = "https://edu.21-school.ru/services/graphql"
+var s21GqlUrl = "https://platform.21-school.ru/services/graphql"
 
 func RequestUserData(token Token, ctx context.Context) (user User, err error) {
 	client := resty.New()

@@ -1,6 +1,6 @@
 # s21auto-client-go 🍻🫃
 
-Клиент для внутреннего GQL API платформы edu.21-school.ru. 
+Клиент для внутреннего GQL API платформы platform.21-school.ru. 
 Предназначен для использования с [s21auto](https://github.com/s21toolkit/s21auto) для генерации запросов (`requests/`) из HAR логов платформы.
 
 > [!IMPORTANT]
