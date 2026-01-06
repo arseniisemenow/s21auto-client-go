@@ -7,8 +7,9 @@ import (
 )
 
 type defaultAuthProvider struct {
-	token    auth.Token
-	schoolId string
+	token          auth.Token
+	schoolId       string
+	contextHeaders *ContextHeaders
 }
 
 func (provider *defaultAuthProvider) refreshCredentials(ctx context.Context) (err error) {
@@ -18,17 +19,28 @@ func (provider *defaultAuthProvider) refreshCredentials(ctx context.Context) (er
 		return err
 	}
 
-	if provider.schoolId != "" {
-		return
+	if provider.schoolId == "" {
+		user, err := auth.RequestUserData(provider.token, ctx)
+
+		if err != nil {
+			return err
+		}
+
+		provider.schoolId = user.Roles[0].SchoolID
 	}
 
-	user, err := auth.RequestUserData(provider.token, ctx)
-
-	if err != nil {
-		return
+	if provider.contextHeaders == nil {
+		headers, err := auth.RequestContextHeaders(provider.token, ctx)
+		if err != nil {
+			return err
+		}
+		provider.contextHeaders = &ContextHeaders{
+			XEDUSchoolID:  headers.XEDUSchoolID,
+			XEDUProductID: headers.XEDUProductID,
+			XEDUOrgUnitID: headers.XEDUOrgUnitID,
+			XEDURouteInfo: headers.XEDURouteInfo,
+		}
 	}
-
-	provider.schoolId = user.Roles[0].SchoolID
 
 	return
 }
@@ -41,8 +53,9 @@ func (provider *defaultAuthProvider) GetAuthCredentials(ctx context.Context) (cr
 	}
 
 	credentials = AuthCredentials{
-		Token:    provider.token.AccessToken,
-		SchoolId: provider.schoolId,
+		Token:          provider.token.AccessToken,
+		SchoolId:       provider.schoolId,
+		ContextHeaders: provider.contextHeaders,
 	}
 
 	return

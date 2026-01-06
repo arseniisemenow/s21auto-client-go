@@ -38,8 +38,20 @@ func main() {
 	}
 	fmt.Printf("User ID: %s, Roles count: %d\n", user.Data.ID, len(user.Roles))
 
+	// Test getting context headers (new feature)
+	fmt.Println("\nFetching edu-context headers...")
+	contextHeaders, err := auth.RequestContextHeaders(token, ctx)
+	if err != nil {
+		log.Fatalf("Failed to get context headers: %v", err)
+	}
+	fmt.Printf("X-EDU-SCHOOL-ID: %s\n", contextHeaders.XEDUSchoolID)
+	fmt.Printf("X-EDU-PRODUCT-ID: %s\n", contextHeaders.XEDUProductID)
+	fmt.Printf("X-EDU-ORG-UNIT-ID: %s\n", contextHeaders.XEDUOrgUnitID)
+	fmt.Printf("X-EDU-ROUTE-INFO: %s\n", contextHeaders.XEDURouteInfo)
+
 	// Now test the full client flow
-	fmt.Println("\nTesting full client flow...")
+	// The client automatically fetches and applies context headers to all requests
+	fmt.Println("\nTesting full client flow (headers applied automatically)...")
 	client := s21client.New(
 		s21client.DefaultAuth(username, password),
 	)
@@ -50,5 +62,5 @@ func main() {
 	}
 
 	fmt.Printf("Current user: %s %s\n", currentUser.User.GetCurrentUser.FirstName, currentUser.User.GetCurrentUser.LastName)
-	fmt.Println("Success!")
+	fmt.Println("Success! Context headers are now automatically added to all requests.")
 }

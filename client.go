@@ -29,6 +29,13 @@ func (client *Client) applyAuth(request *resty.Request) (err error) {
 
 	request.SetAuthToken(credentials.Token).SetHeader("schoolid", credentials.SchoolId)
 
+	if credentials.ContextHeaders != nil {
+		request.SetHeader("X-EDU-SCHOOL-ID", credentials.ContextHeaders.XEDUSchoolID)
+		request.SetHeader("X-EDU-PRODUCT-ID", credentials.ContextHeaders.XEDUProductID)
+		request.SetHeader("X-EDU-ORG-UNIT-ID", credentials.ContextHeaders.XEDUOrgUnitID)
+		request.SetHeader("X-EDU-ROUTE-INFO", credentials.ContextHeaders.XEDURouteInfo)
+	}
+
 	return
 }
 
