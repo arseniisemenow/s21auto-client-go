@@ -45,6 +45,10 @@ func New(authProvider AuthProvider) *Client {
 		resty:        resty.New(),
 	}
 
+	// Set default headers for GraphQL API
+	client.resty.SetHeader("Origin", "https://platform.21-school.ru")
+	client.resty.SetHeader("Referer", "https://platform.21-school.ru/")
+
 	client.resty.OnBeforeRequest(func(c *resty.Client, r *resty.Request) error {
 		return client.applyAuth(r)
 	})

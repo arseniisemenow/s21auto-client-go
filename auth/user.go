@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/arseniisemenow/s21auto-client-go/gql"
 
@@ -17,17 +18,25 @@ type userDataRole struct {
 }
 
 type User struct {
-	Data  UserData   `json:"getCurrentUser"`
-	Roles []UserRole `json:"getCurrentUserSchoolRoles"`
+	Data     UserData        `json:"getCurrentUser"`
+	Roles    []UserRole      `json:"getCurrentUserSchoolRoles"`
+	UserRoles []UserRoleField `json:"getCurrentUserRoles"`
+}
+
+type UserRoleField struct {
+	OrgUnitID      string `json:"orgUnitId"`
+	OrgUnitShortName string `json:"orgUnitShortName"`
+	RoleCode       string `json:"roleCode"`
 }
 
 type UserData struct {
-	FunctionalRoles    []FunctionalRole       `json:"functionalRoles"`
-	ID                 string                 `json:"id"`
-	StudentRoles       []StudentRole          `json:"studentRoles"`
-	SchoolPermissions  []UserSchoolPermission `json:"userSchoolPermissions"`
-	SystemAdminRole    interface{}            `json:"systemAdminRole"`
-	BusinessAdminRoles []interface{}          `json:"businessAdminRolesV2"`
+	FunctionalRoles       []FunctionalRole       `json:"functionalRoles"`
+	ID                    string                 `json:"id"`
+	StudentRoles          []StudentRole          `json:"studentRoles"`
+	SchoolPermissions     []UserSchoolPermission `json:"userSchoolPermissions"`
+	SystemAdminRole       interface{}            `json:"systemAdminRole"`
+	BusinessAdminRoles    []interface{}          `json:"businessAdminRolesV2"`
+	IsStudentOfChildrenCampus bool                `json:"isStudentOfChildrenCampus"`
 }
 
 type FunctionalRole struct {
@@ -56,7 +65,60 @@ type UserRole struct {
 }
 
 var userRoleLoaderGetRolesRequest = gql.NewQueryRequest(
-	"query userRoleLoaderGetRoles { user { getCurrentUser { functionalRoles { code __typename } id studentRoles { id school { id shortName organizationType __typename } status __typename } userSchoolPermissions { schoolId permissions __typename } systemAdminRole { id __typename } businessAdminRolesV2 { id school { id organizationType __typename } orgUnitId __typename } __typename } getCurrentUserSchoolRoles { schoolId __typename } __typename } } ",
+	`query userRoleLoaderGetRoles {
+  user {
+    getCurrentUser {
+      functionalRoles {
+        code
+        __typename
+      }
+      id
+      studentRoles {
+        id
+        school {
+          id
+          shortName
+          organizationType
+          __typename
+        }
+        status
+        __typename
+      }
+      userSchoolPermissions {
+        schoolId
+        permissions
+        __typename
+      }
+      systemAdminRole {
+        id
+        __typename
+      }
+      businessAdminRolesV2 {
+        id
+        school {
+          id
+          organizationType
+          __typename
+        }
+        orgUnitId
+        __typename
+      }
+      isStudentOfChildrenCampus
+      __typename
+    }
+    getCurrentUserSchoolRoles {
+      schoolId
+      __typename
+    }
+    getCurrentUserRoles {
+      orgUnitId
+      orgUnitShortName
+      roleCode
+      __typename
+    }
+    __typename
+  }
+}`,
 	gql.None{},
 )
 
@@ -65,9 +127,20 @@ var s21GqlUrl = "https://platform.21-school.ru/services/graphql"
 func RequestUserData(token Token, ctx context.Context) (user User, err error) {
 	client := resty.New()
 
-	res, err := client.R().SetContext(ctx).SetAuthToken(token.AccessToken).SetBody(userRoleLoaderGetRolesRequest).Post(s21GqlUrl)
+	res, err := client.R().
+		SetContext(ctx).
+		SetAuthToken(token.AccessToken).
+		SetHeader("Origin", "https://platform.21-school.ru").
+		SetHeader("Referer", "https://platform.21-school.ru/").
+		SetBody(userRoleLoaderGetRolesRequest).
+		Post(s21GqlUrl)
 
 	if err != nil {
+		return
+	}
+
+	if res.StatusCode() != 200 {
+		err = fmt.Errorf("unexpected status code %d: %s", res.StatusCode(), res.String())
 		return
 	}
 

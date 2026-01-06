@@ -3,15 +3,11 @@ package auth
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/arseniisemenow/s21auto-client-go/util"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/google/uuid"
 )
 
 type tokenResponse struct {
@@ -28,133 +24,87 @@ type tokenResponse struct {
 }
 
 type Token struct {
-	AccessToken string
-
-	Code string
-
-	Username string
-	Password string
-
-	Cookies []*http.Cookie
+	AccessToken  string
+	RefreshToken string
+	Username     string
+	Password     string
 
 	IssueTime  int64
 	ExpiryTime int64
 }
 
 const (
-	kсBaseUrl         = "https://auth.sberclass.ru/auth/realms/EduPowerKeycloak"
-	cookieUrlTemplate = kсBaseUrl + "/protocol/openid-connect/auth?client_id=school21&redirect_uri=https%%3A%%2F%%2Fplatform.21-school.ru%%2F&state=%s&response_mode=fragment&response_type=code&scope=openid&nonce=%s"
-	tokenUrl          = kсBaseUrl + "/protocol/openid-connect/token"
+	tokenUrl = "https://auth.21-school.ru/auth/realms/EduPowerKeycloak/protocol/openid-connect/token"
+	clientID = "school21"
 )
 
-var (
-	loginActionPattern = regexp.MustCompile(`(?P<LoginActionURL>https:\/\/.+?)"`)
-	oauthCodePattern   = regexp.MustCompile(`code=(?P<OAuthCode>.+)[&$]?`)
-)
-
-func getLoginActionUrl(data []byte) string {
-	rawUrl := loginActionPattern.FindStringSubmatch(string(data))[loginActionPattern.SubexpIndex("LoginActionURL")]
-
-	return strings.ReplaceAll(rawUrl, "amp;", "")
-}
-
-func getAuthData(username, password string, ctx context.Context) (authCode string, kcCookies []*http.Cookie, err error) {
-	state := uuid.New().String()
-	nonce := uuid.New().String()
+func (token *Token) Refresh(ctx context.Context) error {
+	// If token is still valid (with 60 second buffer), no need to refresh
+	if token.AccessToken != "" && (time.Now().Unix() < token.ExpiryTime-60) {
+		return nil
+	}
 
 	client := resty.New()
-	client.SetRedirectPolicy(resty.NoRedirectPolicy())
 
-	cookieUrl := fmt.Sprintf(cookieUrlTemplate, state, nonce)
+	var formData map[string]string
+	if token.RefreshToken != "" {
+		// Use refresh token if available
+		formData = map[string]string{
+			"client_id":     clientID,
+			"grant_type":    "refresh_token",
+			"refresh_token": token.RefreshToken,
+		}
+	} else {
+		// Use username/password for initial auth
+		formData = map[string]string{
+			"client_id":  clientID,
+			"grant_type": "password",
+			"username":   token.Username,
+			"password":   token.Password,
+		}
+	}
 
-	res, err := client.R().SetContext(ctx).Get(cookieUrl)
+	res, err := client.R().
+		SetContext(ctx).
+		SetHeader("Content-Type", "application/x-www-form-urlencoded").
+		SetFormData(formData).
+		Post(tokenUrl)
 
 	if err != nil {
-		return
+		return fmt.Errorf("token request failed: %w", err)
 	}
 
-	client.SetCookies(res.Cookies())
-
-	loginAction := getLoginActionUrl(res.Body())
-
-	res, err = client.R().SetContext(ctx).SetFormData(map[string]string{
-		"username": username,
-		"password": password,
-	}).Post(loginAction)
-
-	if res.StatusCode() != 302 && err != nil {
-		return
+	if res.StatusCode() != 200 {
+		return fmt.Errorf("token request failed with status %d: %s", res.StatusCode(), res.String())
 	}
 
-	client.SetCookies(res.Cookies())
-
-	location := res.Header().Get("location")
-
-	res, err = client.R().SetContext(ctx).Post(location)
-
-	if res.StatusCode() != 302 && err != nil {
-		return
-	}
-
-	location = res.Header().Get("location")
-
-	authCode = oauthCodePattern.FindStringSubmatch(location)[oauthCodePattern.SubexpIndex("OAuthCode")]
-	kcCookies = client.Cookies
-
-	err = nil
-
-	return
-}
-
-func (token *Token) Refresh(ctx context.Context) (err error) {
-	if !(token.Code == "" || (time.Now().Unix()-token.IssueTime) > token.ExpiryTime) {
-		return
-	}
-
-	token.Code, token.Cookies, err = getAuthData(token.Username, token.Password, ctx)
-
+	tokenResp, err := util.UnmarshalJson[tokenResponse](res.Body())
 	if err != nil {
-		return
+		return fmt.Errorf("failed to parse token response: %w", err)
 	}
 
+	if tokenResp.Error != "" {
+		return fmt.Errorf("unable to get access token: %s", tokenResp.Error)
+	}
+
+	token.AccessToken = tokenResp.AccessToken
+	token.RefreshToken = tokenResp.RefreshToken
 	token.IssueTime = time.Now().Unix()
+	token.ExpiryTime = token.IssueTime + tokenResp.ExpiresIn
 
-	client := resty.New()
-	client.SetCookies(token.Cookies)
-
-	res, err := client.R().SetContext(ctx).SetFormData(map[string]string{
-		"code":         token.Code,
-		"grant_type":   "authorization_code",
-		"client_id":    "school21",
-		"redirect_uri": "https://platform.21-school.ru/",
-	}).Post(tokenUrl)
-
-	if err != nil {
-		return
-	}
-
-	tokenResponse, err := util.UnmarshalJson[tokenResponse](res.Body())
-
-	if err != nil {
-		return
-	}
-
-	if tokenResponse.Error != "" {
-		err = fmt.Errorf("unable to get access token: %s", tokenResponse.Error)
-
-		return
-	}
-
-	token.ExpiryTime = tokenResponse.ExpiresIn
-	token.AccessToken = tokenResponse.AccessToken
-
-	return
+	return nil
 }
 
-func RequestToken(username, password string, ctx context.Context) (token Token, err error) {
-	token.Username, token.Password = username, password
+func RequestToken(username, password string, ctx context.Context) (Token, error) {
+	token := Token{
+		Username: username,
+		Password: password,
+	}
 
-	err = token.Refresh(ctx)
+	err := token.Refresh(ctx)
+	if err != nil {
+		return Token{}, err
+	}
 
-	return
+	return token, nil
 }
