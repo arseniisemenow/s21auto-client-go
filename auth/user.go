@@ -18,25 +18,25 @@ type userDataRole struct {
 }
 
 type User struct {
-	Data     UserData        `json:"getCurrentUser"`
-	Roles    []UserRole      `json:"getCurrentUserSchoolRoles"`
+	Data      UserData        `json:"getCurrentUser"`
+	Roles     []UserRole      `json:"getCurrentUserSchoolRoles"`
 	UserRoles []UserRoleField `json:"getCurrentUserRoles"`
 }
 
 type UserRoleField struct {
-	OrgUnitID      string `json:"orgUnitId"`
+	OrgUnitID        string `json:"orgUnitId"`
 	OrgUnitShortName string `json:"orgUnitShortName"`
-	RoleCode       string `json:"roleCode"`
+	RoleCode         string `json:"roleCode"`
 }
 
 type UserData struct {
-	FunctionalRoles       []FunctionalRole       `json:"functionalRoles"`
-	ID                    string                 `json:"id"`
-	StudentRoles          []StudentRole          `json:"studentRoles"`
-	SchoolPermissions     []UserSchoolPermission `json:"userSchoolPermissions"`
-	SystemAdminRole       interface{}            `json:"systemAdminRole"`
-	BusinessAdminRoles    []interface{}          `json:"businessAdminRolesV2"`
-	IsStudentOfChildrenCampus bool                `json:"isStudentOfChildrenCampus"`
+	FunctionalRoles           []FunctionalRole       `json:"functionalRoles"`
+	ID                        string                 `json:"id"`
+	StudentRoles              []StudentRole          `json:"studentRoles"`
+	SchoolPermissions         []UserSchoolPermission `json:"userSchoolPermissions"`
+	SystemAdminRole           interface{}            `json:"systemAdminRole"`
+	BusinessAdminRoles        []interface{}          `json:"businessAdminRolesV2"`
+	IsStudentOfChildrenCampus bool                   `json:"isStudentOfChildrenCampus"`
 }
 
 type FunctionalRole struct {

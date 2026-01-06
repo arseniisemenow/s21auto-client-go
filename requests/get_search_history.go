@@ -8,13 +8,14 @@ import "github.com/arseniisemenow/s21auto-client-go/gql"
 type GetSearchHistory_Variables struct {
 }
 
+
 type GetSearchHistory_Data struct {
 	GlobalSearch GetSearchHistory_Data_GlobalSearch `json:"globalSearch"`
 }
 
 type GetSearchHistory_Data_GlobalSearch struct {
 	GetSearchHistoryTooltips []GetSearchHistory_Data_GetSearchHistoryTooltip `json:"getSearchHistoryTooltips"`
-	Typename                 string                                          `json:"__typename"`
+	Typename                 string                    `json:"__typename"`
 }
 
 type GetSearchHistory_Data_GetSearchHistoryTooltip struct {
@@ -22,6 +23,7 @@ type GetSearchHistory_Data_GetSearchHistoryTooltip struct {
 	TooltipCategory string `json:"tooltipCategory"`
 	Typename        string `json:"__typename"`
 }
+
 
 func (ctx *RequestContext) GetSearchHistory(variables GetSearchHistory_Variables) (GetSearchHistory_Data, error) {
 	request := gql.NewQueryRequest[GetSearchHistory_Variables](

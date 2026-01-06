@@ -9,6 +9,7 @@ type GetUserNotificationsCount_Variables struct {
 	WasReadIncluded bool `json:"wasReadIncluded"`
 }
 
+
 type GetUserNotificationsCount_Data struct {
 	S21Notification GetUserNotificationsCount_Data_S21Notification `json:"s21Notification"`
 }
@@ -17,6 +18,7 @@ type GetUserNotificationsCount_Data_S21Notification struct {
 	GetS21NotificationsCount int64  `json:"getS21NotificationsCount"`
 	Typename                 string `json:"__typename"`
 }
+
 
 func (ctx *RequestContext) GetUserNotificationsCount(variables GetUserNotificationsCount_Variables) (GetUserNotificationsCount_Data, error) {
 	request := gql.NewQueryRequest[GetUserNotificationsCount_Variables](
