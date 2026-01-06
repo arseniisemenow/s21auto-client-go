@@ -1,7 +1,7 @@
 package s21client
 
 import (
-	"github.com/s21toolkit/s21client/requests"
+	"github.com/arseniisemenow/s21auto-client-go/requests"
 
 	"github.com/go-resty/resty/v2"
 )

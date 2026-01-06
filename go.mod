@@ -1,4 +1,4 @@
-module github.com/s21toolkit/s21client
+module github.com/arseniisemenow/s21auto-client-go
 
 go 1.20
 

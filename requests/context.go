@@ -3,7 +3,7 @@ package requests
 import (
 	"context"
 
-	"github.com/s21toolkit/s21client/gql"
+	"github.com/arseniisemenow/s21auto-client-go/gql"
 
 	"github.com/go-resty/resty/v2"
 )

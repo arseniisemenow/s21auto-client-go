@@ -3,7 +3,7 @@ package s21client
 import (
 	"context"
 
-	"github.com/s21toolkit/s21client/auth"
+	"github.com/arseniisemenow/s21auto-client-go/auth"
 )
 
 type defaultAuthProvider struct {

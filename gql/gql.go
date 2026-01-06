@@ -4,7 +4,7 @@ import (
 	"errors"
 	"regexp"
 
-	"github.com/s21toolkit/s21client/util"
+	"github.com/arseniisemenow/s21auto-client-go/util"
 
 	"github.com/go-resty/resty/v2"
 )
