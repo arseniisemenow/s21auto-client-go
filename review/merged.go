@@ -13,9 +13,10 @@ import (
 
 // GetMergedReviewsWithProjects merges review bookings with project names from notifications
 // It fetches both calendar events and user notifications, then matches them by time.
+// Uses ConvertInterface to convert bookings from interface{} to typed Booking struct.
 // Times are converted to UTC+3 to match the notification format.
 func GetMergedReviewsWithProjects(ctx context.Context, client *s21client.Client) ([]MergedReview, error) {
-	// Get events (contains both available and booked slots)
+	// Get events using existing API (contains bookings as interface{})
 	from := time.Now()
 	to := time.Now().AddDate(0, 0, 7) // Next week
 
@@ -41,28 +42,6 @@ func GetMergedReviewsWithProjects(ctx context.Context, client *s21client.Client)
 	events := eventsResp.CalendarEventS21.GetMyCalendarEvents
 	notifications := notificationsResp.S21Notification.GetS21Notifications
 
-	// Extract booked slots from events (where user is the verifier)
-	var bookedSlots []struct {
-		ID    string
-		Start time.Time
-		End   time.Time
-	}
-	for _, event := range events {
-		for _, slot := range event.EventSlots {
-			if slot.Type != "FREE_TIME" {
-				bookedSlots = append(bookedSlots, struct {
-					ID    string
-					Start time.Time
-					End   time.Time
-				}{
-					ID:    slot.ID,
-					Start: slot.Start,
-					End:   slot.End,
-				})
-			}
-		}
-	}
-
 	// Build a map of time -> project name from notifications
 	// Parse times from notifications (they are in UTC+3 format)
 	timeToProject := make(map[string]string)
@@ -78,33 +57,60 @@ func GetMergedReviewsWithProjects(ctx context.Context, client *s21client.Client)
 		}
 	}
 
-	// Merge data
+	// Extract bookings from events using ConvertInterface
 	var mergedReviews []MergedReview
-	for _, slot := range bookedSlots {
-		var review MergedReview
-		// Convert to UTC+3 to match notification format
-		localTime := slot.Start.In(time.FixedZone("UTC+3", 3*3600))
-		review.Time = localTime.Format("2006.01.02, 15:04")
-		review.SlotID = slot.ID
 
-		// Try to find project name from notifications (notifications use UTC+3)
-		timeKey := localTime.Format("2006.01.02, 15:04")
-		if projectName, exists := timeToProject[timeKey]; exists {
-			review.ProjectName = projectName
-		}
+	for _, event := range events {
+		for _, bookingI := range event.Bookings {
+			// Convert interface{} to typed Booking struct
+			var booking Booking
+			if err := ConvertInterface(bookingI, &booking); err != nil {
+				// Continue on conversion error - skip this booking
+				continue
+			}
 
-		// For booked slots where user is verifier, we don't have goal name/verifier info in the event
-		// This info might be in the notifications or requires another API call
-		review.GoalName = "N/A"
-		review.Verifier = "You (verifier)"
-		review.Status = "BOOKED"
+			// Parse time from event slot
+			startTime, err := time.Parse(time.RFC3339, booking.EventSlot.Start)
+			if err != nil {
+				// Skip if time parsing fails
+				continue
+			}
 
-		if review.Time != "" {
+			// Convert to UTC+3 to match notification format
+			// Todo: This need to be configurable or auto
+			localTime := startTime.In(time.FixedZone("UTC+3", 3*3600))
+			timeKey := localTime.Format("2006.01.02, 15:04")
+
+			// Extract goal name
+			goalName := "N/A"
+			if booking.Task != nil && booking.Task.GoalName != "" {
+				goalName = booking.Task.GoalName
+			}
+
+			// Extract verifier login
+			verifier := "N/A"
+			if booking.VerifierUser != nil && booking.VerifierUser.Login != "" {
+				verifier = booking.VerifierUser.Login
+			}
+
+			// Create merged review
+			review := MergedReview{
+				Time:     timeKey,
+				Booking:  booking,
+				GoalName: goalName,
+				Verifier: verifier,
+			}
+
+			// Try to find project name from notifications (notifications use UTC+3)
+			if projectName, exists := timeToProject[timeKey]; exists {
+				review.ProjectName = projectName
+			}
+
 			mergedReviews = append(mergedReviews, review)
 		}
 	}
 
-	// Sort by time
+	// Sort by time, maybe redundant
 	sort.Slice(mergedReviews, func(i, j int) bool {
 		timeI, _ := time.Parse("2006.01.02, 15:04", mergedReviews[i].Time)
 		timeJ, _ := time.Parse("2006.01.02, 15:04", mergedReviews[j].Time)
