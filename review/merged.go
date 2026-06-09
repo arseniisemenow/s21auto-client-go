@@ -43,17 +43,28 @@ func GetMergedReviewsWithProjects(ctx context.Context, client *s21client.Client)
 	notifications := notificationsResp.S21Notification.GetS21Notifications
 
 	// Build a map of time -> project name from notifications
-	// Parse times from notifications (they are in UTC+3 format)
+	// Parse times from notifications (they are in UTC+3 format).
+	//
+	// A review slot can be rebooked to a different project at the same time,
+	// producing multiple PROJECTS notifications for one review time. Notifications
+	// arrive newest-first, so a naive last-write-wins keeps the OLDEST (stale)
+	// project. Keep the project from the NEWEST notification (by its timestamp)
+	// instead — order-independent.
 	timeToProject := make(map[string]string)
+	timeToNotifTime := make(map[string]time.Time)
 
 	for _, n := range notifications.Notifications {
 		// Look for messages like: "Someone registered for a review of the project <b>DO6_CICD</b> by you on <b>2026.01.22, 19:45</b>"
-		message := n.Message
-		if n.GroupName == "PROJECTS" {
-			projectName, reviewTime := parseProjectFromNotification(message)
-			if projectName != "" && reviewTime != "" {
-				timeToProject[reviewTime] = projectName
-			}
+		if n.GroupName != "PROJECTS" {
+			continue
+		}
+		projectName, reviewTime := parseProjectFromNotification(n.Message)
+		if projectName == "" || reviewTime == "" {
+			continue
+		}
+		if prev, ok := timeToNotifTime[reviewTime]; !ok || n.Time.After(prev) {
+			timeToProject[reviewTime] = projectName
+			timeToNotifTime[reviewTime] = n.Time
 		}
 	}
 
